@@ -5,7 +5,9 @@ import androidx.room3.ColumnTypeConverters
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import com.example.attendanceapp.data.dao.SessionUserDao
+import com.example.attendanceapp.data.dao.StaffListCacheDao
 import com.example.attendanceapp.data.dto.SessionUser
+import com.example.attendanceapp.data.dto.StaffListCache
 import kotlinx.serialization.json.Json
 
 class Converters {
@@ -24,7 +26,7 @@ class Converters {
 }
 
 @Database(
-    entities = [SessionUser::class],
+    entities = [SessionUser::class, StaffListCache::class],
     version = 1,
     exportSchema = false
 )
@@ -32,5 +34,6 @@ class Converters {
 abstract class AppDatabase: RoomDatabase() {
 
     abstract fun sessionUserDao(): SessionUserDao
+    abstract fun staffListCacheDao(): StaffListCacheDao
 
 }
