@@ -85,7 +85,7 @@ fun TestScreen() {
                 .build()
         )
     }
-    val engine = remember { FaceRecognitionManagerFaceNetImpl(context, Models.FaceNet) }
+    val engine = remember { FaceRecognitionManagerFaceNetImpl(context, Models.FACENET) }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -236,7 +236,7 @@ fun TestScreen() {
             fontWeight = FontWeight.Bold
         )
         Text(
-            text = "Model: ${Models.FaceNet.name} (${Models.FaceNet.outputDims}-d) | Threshold: ${Models.FaceNet.threshold}",
+            text = "Model: ${Models.FACENET.modelName} (${Models.FACENET.outputDims}-d) | Threshold: ${Models.FACENET.threshold}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -272,7 +272,7 @@ fun TestScreen() {
                             engine.calculateCosineSimilarity(e1, e2)
                         }
                         similarityScore = score
-                        val matched = score >= Models.FaceNet.threshold
+                        val matched = score >= Models.FACENET.threshold
                         statusMessage = if (matched) "Faces MATCH!" else "Faces DO NOT MATCH."
                     }
                 }
@@ -317,7 +317,7 @@ fun TestScreen() {
                 )
 
                 similarityScore?.let { score ->
-                    val isMatch = score >= Models.FaceNet.threshold
+                    val isMatch = score >= Models.FACENET.threshold
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = "Cosine Similarity: ${String.format(Locale.US, "%.4f", score)}",
@@ -340,7 +340,7 @@ fun TestScreen() {
                     }
 
                     Text(
-                        text = "Decision rule: score >= ${Models.FaceNet.threshold} (Higher means more similar)",
+                        text = "Decision rule: score >= ${Models.FACENET.threshold} (Higher means more similar)",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )

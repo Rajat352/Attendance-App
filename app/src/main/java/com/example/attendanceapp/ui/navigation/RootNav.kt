@@ -15,9 +15,10 @@ import com.example.attendanceapp.ui.screens.staff.StaffScreen
 
 @Composable
 fun RootNav(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    startDestination: Route.TopLevel = Route.TopLevel.Login
 ) {
-    val backStack = rememberNavBackStack(Route.TopLevel.Login)
+    val backStack = rememberNavBackStack(startDestination)
 
     Scaffold(
         modifier = modifier
@@ -31,7 +32,16 @@ fun RootNav(
             ),
             entryProvider = entryProvider {
                 entry<Route.TopLevel.Login> {
-                    LoginScreen()
+                    LoginScreen(
+                        onAdminLogin = {
+                            backStack.clear()
+                            backStack.add(Route.TopLevel.Admin)
+                        },
+                        onStaffLogin = {
+                            backStack.clear()
+                            backStack.add(Route.TopLevel.Staff)
+                        }
+                    )
                 }
                 entry<Route.TopLevel.Admin> {
                     AdminScreen()

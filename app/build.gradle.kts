@@ -65,8 +65,18 @@ dependencies {
     implementation(libs.camera.lifecycle)
     implementation(libs.camera.view)
     implementation(libs.tensorflow.lite)
+
     implementation(libs.androidx.navigation3.ui)
     implementation(libs.androidx.navigation3.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.navigation3)
     implementation(libs.kotlinx.serialization.core)
+
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.kotlinx.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.room)
+    ksp(libs.room.compiler)
 }

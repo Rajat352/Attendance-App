@@ -17,7 +17,7 @@ interface FaceRecognitionManager {
 
 class FaceRecognitionManagerFaceNetImpl(
     val context: Context,
-    val model: ModelInfo
+    val model: Models
 ): FaceRecognitionManager {
 
     private var interpreter: Interpreter? = null
