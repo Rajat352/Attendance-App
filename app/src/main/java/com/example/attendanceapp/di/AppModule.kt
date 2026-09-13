@@ -2,6 +2,7 @@ package com.example.attendanceapp.di
 
 import android.content.Context
 import androidx.room3.Room
+import com.example.attendanceapp.BuildConfig
 import com.example.attendanceapp.data.AppDatabase
 import com.example.attendanceapp.data.location.DefaultLocationClient
 import com.example.attendanceapp.data.location.LocationClient
@@ -30,7 +31,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-    private const val BASE_URL = "http://192.168.1.7:8000/"
+    private const val BASE_URL = BuildConfig.BASE_URL
 
     private val json = Json {
         ignoreUnknownKeys = true

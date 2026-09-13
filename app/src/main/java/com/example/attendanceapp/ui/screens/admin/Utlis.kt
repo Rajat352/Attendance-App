@@ -1,5 +1,6 @@
 package com.example.attendanceapp.ui.screens.admin
 
+import com.example.attendanceapp.BuildConfig
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -21,7 +22,7 @@ fun resolveImageUrl(url: String): String {
     return if (trimmed.startsWith("http://", ignoreCase = true) || trimmed.startsWith("https://", ignoreCase = true)) {
         trimmed
     } else {
-        val base = "http://192.168.1.7:8000".trimEnd('/')
+        val base = BuildConfig.BASE_URL.trimEnd('/')
         if (trimmed.startsWith("/")) "$base$trimmed" else "$base/$trimmed"
     }
 }
