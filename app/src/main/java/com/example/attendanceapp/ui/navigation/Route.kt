@@ -9,4 +9,7 @@ sealed interface Route: NavKey {
         @Serializable data object Admin: TopLevel
         @Serializable data object Staff: TopLevel
     }
+
+    @Serializable
+    data class StaffDetails(val staffId: Int): Route
 }

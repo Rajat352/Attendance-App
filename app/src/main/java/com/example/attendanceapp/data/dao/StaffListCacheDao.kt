@@ -12,6 +12,9 @@ interface StaffListCacheDao {
     @Query("SELECT * FROM staff_list_cache ORDER BY staffId ASC")
     fun getAllStaff(): Flow<List<StaffListCache>>
 
+    @Query("SELECT * FROM staff_list_cache WHERE staffId = :staffId LIMIT 1")
+    fun getStaffById(staffId: Int): Flow<StaffListCache?>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStaffList(staff: List<StaffListCache>)
 

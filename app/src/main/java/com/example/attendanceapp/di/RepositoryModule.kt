@@ -4,6 +4,8 @@ import com.example.attendanceapp.data.AppDatabase
 import com.example.attendanceapp.data.dao.SessionUserDao
 import com.example.attendanceapp.data.dao.StaffListCacheDao
 import com.example.attendanceapp.data.remote.api.AttendanceApiService
+import com.example.attendanceapp.data.repository.AttendanceRepo
+import com.example.attendanceapp.data.repository.AttendanceRepoImpl
 import com.example.attendanceapp.data.repository.AuthRepo
 import com.example.attendanceapp.data.repository.AuthRepoImpl
 import com.example.attendanceapp.data.repository.StaffRepo
@@ -46,5 +48,13 @@ object RepositoryModule {
         staffListCacheDao: StaffListCacheDao
     ): StaffRepo {
         return StaffRepoImpl(attendanceApiService, staffListCacheDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAttendanceRepo(
+        attendanceApiService: AttendanceApiService
+    ): AttendanceRepo {
+        return AttendanceRepoImpl(attendanceApiService)
     }
 }

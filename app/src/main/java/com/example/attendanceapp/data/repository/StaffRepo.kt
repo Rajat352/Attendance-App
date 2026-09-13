@@ -17,6 +17,7 @@ interface StaffRepo {
     suspend fun addStaff(staffId: Int, name: String): Result<Unit>
     suspend fun updateStaffEmbedding(staffId: Int, embedding: List<Float>): Result<ApiRes>
     suspend fun getStaffEmbedding(staffId: Int): Result<EmbeddingDto>
+    fun getStaffById(staffId: Int): Flow<StaffListCache?>
 }
 
 class StaffRepoImpl(
@@ -26,6 +27,8 @@ class StaffRepoImpl(
 
     // Room populates UI and not api
     override val staffList: Flow<List<StaffListCache>> = staffListCacheDao.getAllStaff()
+
+    override fun getStaffById(staffId: Int): Flow<StaffListCache?> = staffListCacheDao.getStaffById(staffId)
 
     override suspend fun refreshStaffList(): Result<Unit> {
         return try {
@@ -54,7 +57,21 @@ class StaffRepoImpl(
     }
 
     override suspend fun getStaffEmbedding(staffId: Int): Result<EmbeddingDto> {
-        TODO("Not yet implemented")
+        return try {
+            val response = attendanceApiService.getStaffEmbedding(staffId)
+
+            val body = response.body()
+            if (response.isSuccessful && body != null) {
+                val embedding = EmbeddingDto(embedding = body.embedding)
+
+                Result.success(embedding)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "An error occurred while getting staff embedding from server")
+            Result.failure(e)
+        }
     }
 
     override suspend fun addStaff(staffId: Int, name: String): Result<Unit> {

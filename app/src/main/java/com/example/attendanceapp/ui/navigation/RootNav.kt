@@ -10,6 +10,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.example.attendanceapp.ui.screens.admin.AdminScreen
+import com.example.attendanceapp.ui.screens.admin.StaffDetailsScreen
 import com.example.attendanceapp.ui.screens.login.LoginScreen
 import com.example.attendanceapp.ui.screens.staff.StaffScreen
 
@@ -44,7 +45,21 @@ fun RootNav(
                     )
                 }
                 entry<Route.TopLevel.Admin> {
-                    AdminScreen()
+                    AdminScreen(
+                        onStaffClick = { staffId ->
+                            backStack.add(Route.StaffDetails(staffId))
+                        }
+                    )
+                }
+                entry<Route.StaffDetails> { route ->
+                    StaffDetailsScreen(
+                        staffId = route.staffId,
+                        onBackClick = {
+                            if (backStack.size > 1) {
+                                backStack.removeAt(backStack.lastIndex)
+                            }
+                        }
+                    )
                 }
                 entry<Route.TopLevel.Staff> {
                     StaffScreen()
