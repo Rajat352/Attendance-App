@@ -46,9 +46,10 @@ object RepositoryModule {
     @Singleton
     fun provideStaffRepo(
         attendanceApiService: AttendanceApiService,
-        staffListCacheDao: StaffListCacheDao
+        staffListCacheDao: StaffListCacheDao,
+        sessionUserDao: SessionUserDao
     ): StaffRepo {
-        return StaffRepoImpl(attendanceApiService, staffListCacheDao)
+        return StaffRepoImpl(attendanceApiService, staffListCacheDao, sessionUserDao)
     }
 
     @Provides

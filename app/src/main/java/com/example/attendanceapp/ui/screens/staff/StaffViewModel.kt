@@ -1,13 +1,10 @@
 package com.example.attendanceapp.ui.screens.staff
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendanceapp.data.dao.SessionUserDao
-import com.example.attendanceapp.data.dto.SessionUser
 import com.example.attendanceapp.data.location.LocationClient
-import com.example.attendanceapp.data.remote.dto.SubmitAttendanceRes
 import com.example.attendanceapp.data.repository.AttendanceRepo
 import com.example.attendanceapp.data.repository.AuthRepo
 import com.example.attendanceapp.data.repository.StaffRepo
@@ -21,48 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Stable
-sealed interface AttendanceStage {
-    data object Idle : AttendanceStage
-    data object ProcessingSelfie : AttendanceStage
-    data object VerifyingFace : AttendanceStage
-    data object FetchingLocation : AttendanceStage
-    data object SubmittingAttendance : AttendanceStage
-    data class Success(
-        val res: SubmitAttendanceRes,
-        val timestamp: Long,
-        val latitude: Double,
-        val longitude: Double,
-        val selfie: Bitmap
-    ) : AttendanceStage
-    data class Failure(
-        val reason: FailureReason,
-        val message: String,
-        val similarityScore: Float? = null
-    ) : AttendanceStage
-}
-
-enum class FailureReason {
-    NO_FACE,
-    MULTIPLE_FACES,
-    FACE_MISMATCH,
-    NOT_ENROLLED,
-    LOCATION_ERROR,
-    SERVER_ERROR
-}
-
-@Stable
-data class StaffUiState(
-    val user: SessionUser? = null,
-    val isLoadingUser: Boolean = true,
-    val isFetchingEmbedding: Boolean = false,
-    val isCameraActive: Boolean = false,
-    val attendanceStage: AttendanceStage = AttendanceStage.Idle
-)
-
 @HiltViewModel
 class StaffViewModel @Inject constructor(
-    private val sessionUserDao: SessionUserDao,
     private val authRepo: AuthRepo,
     private val staffRepo: StaffRepo,
     private val attendanceRepo: AttendanceRepo,
@@ -80,7 +37,7 @@ class StaffViewModel @Inject constructor(
 
     private fun observeSessionUser() {
         viewModelScope.launch {
-            sessionUserDao.getSessionUser().collect { sessionUser ->
+            authRepo.getSessionUser().collect { sessionUser ->
                 _uiState.update {
                     it.copy(
                         user = sessionUser,
@@ -89,7 +46,7 @@ class StaffViewModel @Inject constructor(
                 }
 
                 if (sessionUser?.staffId != null) {
-                    // If embedding not cached yet, fetch from server
+                    // If embedding not p[resent, fetch from server
                     if (sessionUser.enrolledFaceEmbedding == null) {
                         fetchAndCacheEmbedding(sessionUser.staffId)
                     }
@@ -102,10 +59,7 @@ class StaffViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isFetchingEmbedding = true) }
             staffRepo.getStaffEmbedding(staffId)
-                .onSuccess { dto ->
-                    if (dto.embedding.isNotEmpty()) {
-                        sessionUserDao.upsertEmbedding(staffId, dto.embedding)
-                    }
+                .onSuccess {
                     _uiState.update { it.copy(isFetchingEmbedding = false) }
                 }
                 .onFailure {
@@ -136,7 +90,6 @@ class StaffViewModel @Inject constructor(
                     .onSuccess { dto ->
                         _uiState.update { it.copy(isFetchingEmbedding = false) }
                         if (dto.embedding.isNotEmpty()) {
-                            sessionUserDao.upsertEmbedding(user.staffId, dto.embedding)
                             _uiState.update { it.copy(isCameraActive = true, attendanceStage = AttendanceStage.Idle) }
                         } else {
                             _uiState.update {
@@ -191,7 +144,7 @@ class StaffViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            // 1. Processing Selfie
+            // Processing Selfie
             _uiState.update {
                 it.copy(
                     isCameraActive = false,
@@ -219,7 +172,7 @@ class StaffViewModel @Inject constructor(
 
             val processedFace = faceProcessResult.getOrThrow()
 
-            // 2. Verifying Face Match
+            // Verify Face Match
             _uiState.update { it.copy(attendanceStage = AttendanceStage.VerifyingFace) }
 
             val verification = verifyFaceUseCase(
@@ -227,7 +180,6 @@ class StaffViewModel @Inject constructor(
                 enrolledEmbedding = enrolledEmbedding
             )
 
-            // CRITICAL GATE: Attendance is ONLY recorded if the face matches!
             if (!verification.isMatch) {
                 _uiState.update {
                     it.copy(
@@ -241,7 +193,6 @@ class StaffViewModel @Inject constructor(
                 return@launch
             }
 
-            // 3. Match Succeeded! Fetch current GPS location
             _uiState.update { it.copy(attendanceStage = AttendanceStage.FetchingLocation) }
 
             val locationResult = locationClient.getCurrentLocation()
@@ -253,7 +204,7 @@ class StaffViewModel @Inject constructor(
             val latitude = coordinates?.latitude ?: 0.0
             val longitude = coordinates?.longitude ?: 0.0
 
-            // 4. Submit Attendance to Server
+            // Submit Attendance to Server
             _uiState.update { it.copy(attendanceStage = AttendanceStage.SubmittingAttendance) }
 
             val timestamp = System.currentTimeMillis()

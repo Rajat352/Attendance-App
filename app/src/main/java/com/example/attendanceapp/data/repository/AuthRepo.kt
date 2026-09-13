@@ -7,10 +7,12 @@ import com.example.attendanceapp.data.dto.SessionUser
 import com.example.attendanceapp.data.remote.api.AttendanceApiService
 import com.example.attendanceapp.data.remote.dto.LoginReq
 import com.example.attendanceapp.data.remote.dto.LoginRes
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepo {
     suspend fun login(username: String, password: String): Result<LoginRes>
     suspend fun logout()
+    fun getSessionUser(): Flow<SessionUser?>
 }
 
 class AuthRepoImpl(
@@ -51,6 +53,10 @@ class AuthRepoImpl(
     override suspend fun logout() {
         sessionUserDao.clearSession()
         staffListCacheDao.clearStaff()
+    }
+
+    override fun getSessionUser(): Flow<SessionUser?> {
+        return sessionUserDao.getSessionUser()
     }
 
     companion object {

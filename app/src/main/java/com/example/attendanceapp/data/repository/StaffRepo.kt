@@ -1,6 +1,7 @@
 package com.example.attendanceapp.data.repository
 
 import android.util.Log
+import com.example.attendanceapp.data.dao.SessionUserDao
 import com.example.attendanceapp.data.dao.StaffListCacheDao
 import com.example.attendanceapp.data.dto.StaffListCache
 import com.example.attendanceapp.data.remote.api.AttendanceApiService
@@ -22,7 +23,8 @@ interface StaffRepo {
 
 class StaffRepoImpl(
     private val attendanceApiService: AttendanceApiService,
-    private val staffListCacheDao: StaffListCacheDao
+    private val staffListCacheDao: StaffListCacheDao,
+    private val sessionUserDao: SessionUserDao
 ): StaffRepo {
 
     // Room populates UI and not api
@@ -63,6 +65,7 @@ class StaffRepoImpl(
             val body = response.body()
             if (response.isSuccessful && body != null) {
                 val embedding = EmbeddingDto(embedding = body.embedding)
+                sessionUserDao.upsertEmbedding(staffId, body.embedding)
 
                 Result.success(embedding)
             } else {

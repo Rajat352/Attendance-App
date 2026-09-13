@@ -9,6 +9,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
+import kotlin.math.min
+import androidx.core.graphics.scale
 
 interface AttendanceRepo {
     suspend fun getStaffAttendance(staffId: Int): Result<List<AttendanceDto>>
@@ -28,7 +30,11 @@ class AttendanceRepoImpl(
     ): Result<SubmitAttendanceRes> {
         return try {
             val outputStream = ByteArrayOutputStream()
-            selfie.compress(Bitmap.CompressFormat.JPEG, 85, outputStream)
+            val scaled = if (selfie.width > 720 || selfie.height > 720) {
+                val ratio = min(720f / selfie.width, 720f / selfie.height)
+                selfie.scale((selfie.width * ratio).toInt(), (selfie.height * ratio).toInt())
+            } else selfie
+            scaled.compress(Bitmap.CompressFormat.JPEG, 75, outputStream)
             val byteArray = outputStream.toByteArray()
 
             val selfieRequestBody = byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull())
