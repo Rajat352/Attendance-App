@@ -25,6 +25,7 @@ kotlinxSerializationJson = "1.6.3"
 
 room = "3.0.1"
 coil = "2.7.0"
+playServicesLocation = "21.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,6 +66,7 @@ room = { group = "androidx.room3", name = "room3-runtime", version.ref = "room" 
 room-compiler = { group = "androidx.room3", name = "room3-compiler", version.ref = "room" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 compose-material-icons-core = { group = "androidx.compose.material", name = "material-icons-core" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

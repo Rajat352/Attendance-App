@@ -12,4 +12,7 @@ sealed interface Route: NavKey {
 
     @Serializable
     data class StaffDetails(val staffId: Int): Route
+
+    @Serializable
+    data class FaceEnrollment(val staffId: Int, val staffName: String): Route
 }

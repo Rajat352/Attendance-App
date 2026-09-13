@@ -3,7 +3,16 @@ package com.example.attendanceapp.di
 import android.content.Context
 import androidx.room3.Room
 import com.example.attendanceapp.data.AppDatabase
+import com.example.attendanceapp.data.location.DefaultLocationClient
+import com.example.attendanceapp.data.location.LocationClient
 import com.example.attendanceapp.data.remote.api.AttendanceApiService
+import com.example.attendanceapp.domain.facenet.FaceRecognitionManager
+import com.example.attendanceapp.domain.facenet.FaceRecognitionManagerFaceNetImpl
+import com.example.attendanceapp.domain.facenet.Models
+import com.example.attendanceapp.domain.mlkit.FaceDetectionManager
+import com.example.attendanceapp.domain.mlkit.FaceDetectionManagerMLKitImpl
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -31,7 +40,6 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAttendanceApiService(): AttendanceApiService {
-
         val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(logging)
@@ -56,5 +64,32 @@ object AppModule {
             AppDatabase::class.java,
             "app_database"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFaceDetectionManager(): FaceDetectionManager {
+        return FaceDetectionManagerMLKitImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFaceRecognitionManager(@ApplicationContext context: Context): FaceRecognitionManager {
+        return FaceRecognitionManagerFaceNetImpl(context, Models.FACENET)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient {
+        return LocationServices.getFusedLocationProviderClient(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocationClient(
+        @ApplicationContext context: Context,
+        fusedLocationClient: FusedLocationProviderClient
+    ): LocationClient {
+        return DefaultLocationClient(context, fusedLocationClient)
     }
 }

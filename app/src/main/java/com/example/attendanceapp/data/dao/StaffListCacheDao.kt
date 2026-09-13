@@ -23,4 +23,7 @@ interface StaffListCacheDao {
 
     @Query("DELETE FROM staff_list_cache")
     suspend fun clearStaff()
+
+    @Query("UPDATE staff_list_cache SET isFaceEmbeddingEnrolled = :updated WHERE staffId = :staffId")
+    suspend fun updateFaceEmbeddingEnrollmentStatus(staffId: Int, updated: Boolean)
 }

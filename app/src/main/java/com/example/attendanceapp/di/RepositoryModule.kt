@@ -30,9 +30,10 @@ object RepositoryModule {
     @Singleton
     fun provideAuthRepo(
         attendanceApiService: AttendanceApiService,
-        sessionUserDao: SessionUserDao
+        sessionUserDao: SessionUserDao,
+        staffListCacheDao: StaffListCacheDao
     ): AuthRepo {
-        return AuthRepoImpl(attendanceApiService, sessionUserDao)
+        return AuthRepoImpl(attendanceApiService, sessionUserDao, staffListCacheDao)
     }
 
     @Provides

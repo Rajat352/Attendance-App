@@ -53,7 +53,7 @@ fun StaffDetailsScreen(
     staffId: Int,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    onEnrollClick: () -> Unit = {}
+    onEnrollClick: (staffId: Int, staffName: String) -> Unit = { _, _ -> }
 ) {
     val viewModel: StaffDetailsScreenViewModel = viewModel()
     val state by remember { viewModel.uiState }.collectAsStateWithLifecycle()
@@ -84,7 +84,7 @@ fun StaffDetailsScreen(
                     name = state.name.ifBlank { "Staff #$staffId" },
                     staffId = staffId,
                     isEnrolled = state.isFaceEmbeddingEnrolled,
-                    onEnrollClick = onEnrollClick
+                    onEnrollClick = { onEnrollClick(staffId, state.name) }
                 )
             }
 

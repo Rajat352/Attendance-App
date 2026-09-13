@@ -45,7 +45,8 @@ import com.example.attendanceapp.data.dto.StaffListCache
 
 @Composable
 fun AdminScreen(
-    onStaffClick: (Int) -> Unit = {}
+    onStaffClick: (Int) -> Unit = {},
+    onLogout: () -> Unit = {}
 ) {
     val viewModel: AdminScreenViewModel = viewModel()
     val state by remember { viewModel.uiState }.collectAsStateWithLifecycle()
@@ -90,11 +91,24 @@ fun AdminScreen(
                     .fillMaxSize()
                     .padding(top = 24.dp)
             ) {
-                Text(
-                    text = "Staff List",
-                    style = MaterialTheme.typography.headlineLarge,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Staff List",
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    OutlinedButton(
+                        onClick = { viewModel.logout(onLogout) },
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text("Logout")
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(16.dp))
 

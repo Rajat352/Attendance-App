@@ -100,7 +100,20 @@ class StaffRepoImpl(
         staffId: Int,
         embedding: List<Float>
     ): Result<ApiRes> {
-        TODO("Not yet implemented")
+        return try {
+            val response = attendanceApiService.updateStaffEmbedding(staffId, EmbeddingDto(embedding))
+
+            val body = response.body()
+            if(response.isSuccessful && body != null && body.success) {
+                staffListCacheDao.updateFaceEmbeddingEnrollmentStatus(staffId, true)
+                Result.success(body)
+            } else {
+                Result.failure(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "An error occurred while updating staff embedding")
+            Result.failure(e)
+        }
     }
 
     companion object {

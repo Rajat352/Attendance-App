@@ -10,8 +10,8 @@ import java.nio.channels.FileChannel
 import kotlin.math.sqrt
 
 interface FaceRecognitionManager {
-    fun extractEmbedding(bitmap: Bitmap): FloatArray
-    fun calculateCosineSimilarity(e1: FloatArray, e2: FloatArray): Float
+    fun extractEmbedding(bitmap: Bitmap): List<Float>
+    fun calculateCosineSimilarity(e1: List<Float>, e2: List<Float>): Float
     fun close()
 }
 
@@ -63,14 +63,14 @@ class FaceRecognitionManagerFaceNetImpl(
         return byteBuffer
     }
 
-    override fun extractEmbedding(bitmap: Bitmap): FloatArray {
+    override fun extractEmbedding(bitmap: Bitmap): List<Float> {
         val input = preprocessBitmap(bitmap)
         val output = Array(1) { FloatArray(model.outputDims) }
 
         interpreter?.run(input, output) ?: error("Interpreter not initialized")
 
         val rawEmbedding = output[0]
-        return l2Normalize(rawEmbedding)
+        return l2Normalize(rawEmbedding).toList()
     }
 
     private fun l2Normalize(vector: FloatArray): FloatArray {
@@ -87,7 +87,7 @@ class FaceRecognitionManagerFaceNetImpl(
         return vector
     }
 
-    override fun calculateCosineSimilarity(e1: FloatArray, e2: FloatArray): Float {
+    override fun calculateCosineSimilarity(e1: List<Float>, e2: List<Float>): Float {
         require(e1.size == e2.size) { "Embedding size mismatch: ${e1.size} vs ${e2.size}" }
         var dot = 0f
         for (i in e1.indices) {

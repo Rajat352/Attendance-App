@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.attendanceapp.data.dto.StaffListCache
+import com.example.attendanceapp.data.repository.AuthRepo
 import com.example.attendanceapp.data.repository.StaffRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,11 +16,19 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminScreenViewModel @Inject constructor(
-    private val staffRepo: StaffRepo
+    private val staffRepo: StaffRepo,
+    private val authRepo: AuthRepo
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AdminScreenState())
     val uiState: StateFlow<AdminScreenState> = _uiState.asStateFlow()
+
+    fun logout(onLoggedOut: () -> Unit) {
+        viewModelScope.launch {
+            authRepo.logout()
+            onLoggedOut()
+        }
+    }
 
     init {
         // Staff list populated from RoomDB

@@ -11,6 +11,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.example.attendanceapp.ui.screens.admin.AdminScreen
 import com.example.attendanceapp.ui.screens.admin.StaffDetailsScreen
+import com.example.attendanceapp.ui.screens.admin.enroll.FaceEnrollmentScreen
 import com.example.attendanceapp.ui.screens.login.LoginScreen
 import com.example.attendanceapp.ui.screens.staff.StaffScreen
 
@@ -48,6 +49,10 @@ fun RootNav(
                     AdminScreen(
                         onStaffClick = { staffId ->
                             backStack.add(Route.StaffDetails(staffId))
+                        },
+                        onLogout = {
+                            backStack.clear()
+                            backStack.add(Route.TopLevel.Login)
                         }
                     )
                 }
@@ -58,11 +63,35 @@ fun RootNav(
                             if (backStack.size > 1) {
                                 backStack.removeAt(backStack.lastIndex)
                             }
+                        },
+                        onEnrollClick = { staffId, staffName ->
+                            backStack.add(Route.FaceEnrollment(staffId, staffName))
+                        }
+                    )
+                }
+                entry<Route.FaceEnrollment> { route ->
+                    FaceEnrollmentScreen(
+                        staffId = route.staffId,
+                        staffName = route.staffName,
+                        onBackClick = {
+                            if (backStack.size > 1) {
+                                backStack.removeAt(backStack.lastIndex)
+                            }
+                        },
+                        onEnrollmentSuccess = {
+                            if (backStack.size > 1) {
+                                backStack.removeAt(backStack.lastIndex)
+                            }
                         }
                     )
                 }
                 entry<Route.TopLevel.Staff> {
-                    StaffScreen()
+                    StaffScreen(
+                        onLogout = {
+                            backStack.clear()
+                            backStack.add(Route.TopLevel.Login)
+                        }
+                    )
                 }
             }
         )

@@ -102,13 +102,6 @@ class StaffDetailsScreenViewModel @Inject constructor(
         }
     }
 
-    fun refreshAll() {
-        if (currentStaffId <= 0) return
-        viewModelScope.launch {
-            staffRepo.refreshStaffList()
-            refreshAttendance()
-        }
-    }
 }
 
 @Stable
